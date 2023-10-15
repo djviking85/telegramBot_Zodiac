@@ -48,8 +48,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             logger.info("Processing update: {}", update);
             if (update.message() != null && "/start".equals(update.message().text())) {
                 startMessage(update);
-            } else if (update.callbackQuery() != null) {
-                processCallbackQuery(update);
+//            } else if (update.callbackQuery() != null) {
+//                processCallbackQuery(update);
 //            } else if (update.message().photo() != null) {
 //                saveReportPhoto(update);
 //            } else if (update.message() != null && "Отчет".equalsIgnoreCase(update.message().text().substring(0, 5))) {
@@ -78,11 +78,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //                logger.info("Start button has been activated ^)");
 //                telegramBot.execute(message);
         long id = update.message().chat().id();
-        InlineKeyboardButton[] buttonsRow = {
-                new InlineKeyboardButton(GOROSKOP)};
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRow);
+//        InlineKeyboardButton[] buttonsRow = {
+//                new InlineKeyboardButton(GOROSKOP)};
+//        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRow);
         SendMessage sendMessage = new SendMessage(id, msg);
-        sendMessage.replyMarkup(inlineKeyboard);
+//        sendMessage.replyMarkup(inlineKeyboard);
         telegramBot.execute(sendMessage);
     }
 
