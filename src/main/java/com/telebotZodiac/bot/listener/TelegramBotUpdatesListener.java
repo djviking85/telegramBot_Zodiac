@@ -3,39 +3,35 @@ package com.telebotZodiac.bot.listener;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.telebotZodiac.bot.model.NotificationTask;
-import com.telebotZodiac.bot.repository.NotificationTaskRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 
 public class TelegramBotUpdatesListener implements UpdatesListener {
+    //    делаем статики кнопок
+    private static final String GOROSKOP = "Классический гороскоп \uD83D\uDC36";
+    private static final String GOROSKOP2 = "Классический гороскоп \uD83D\uDC36";
+
     // делаем логи по листенеру
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
-//    public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskRepository notificationTaskRepository) {
-//        this.telegramBot = telegramBot;
-//        this.notificationTaskRepository = notificationTaskRepository;
-//    }
 
-    //    @Autowired
+
+       @Autowired
     private TelegramBot telegramBot;
 
-    private final NotificationTaskRepository notificationTaskRepository;
 
-    public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskRepository notificationTaskRepository) {
+    public TelegramBotUpdatesListener(TelegramBot telegramBot) {
         this.telegramBot = telegramBot;
-        this.notificationTaskRepository = notificationTaskRepository;
     }
 
     @PostConstruct
@@ -45,39 +41,89 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
 //    создание старта, и прикрепление паттерна, паттенр проверяется на наличие ошибки
 
+
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
             logger.info("Processing update: {}", update);
-            String msg = update.message().text();
-            if (msg.equals("/start")) {
-                SendMessage message = new SendMessage(
-                        update.message().chat().id(),
-                        String.format("Здравствуйте %s, вы зарегистрировались в моей сети.  Введите задачу в формате dd.MM.yyyy HH:mm Задача (пример: 12.02.2023 10:45 Сходить в магазин.)", update.message().chat().firstName())
-                );
-                logger.info("Start button has been activated ^)");
-                telegramBot.execute(message);
-            }
-
-            Pattern pattern = Pattern.compile("([0-9\\.\\:\\s]{16})(\\s)([\\W\\w+]+)");
-            Matcher matcher = pattern.matcher(msg);
-            if (matcher.matches()) {
-                String dateTimeStr = msg.substring(0, 16);
-                String text = msg.substring(17);
-                System.out.println(dateTimeStr);
-                LocalDateTime dateTime;
-                try {
-                    dateTime = LocalDateTime.parse(dateTimeStr, DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
-                    System.out.println(text);
-                    NotificationTask notificationTask = new NotificationTask(update.message().chat().id(), dateTime, text);
-                    notificationTaskRepository.save(notificationTask);
-                    logger.info("Напоминание {} успешно сохранено", notificationTask);
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
+            if (update.message() != null && "/start".equals(update.message().text())) {
+                startMessage(update);
+            } else if (update.callbackQuery() != null) {
+                processCallbackQuery(update);
+//            } else if (update.message().photo() != null) {
+//                saveReportPhoto(update);
+//            } else if (update.message() != null && "Отчет".equalsIgnoreCase(update.message().text().substring(0, 5))) {
+//                saveReport(update);
+//            } else if (update.message() != null && checkMessagePattern(update.message().text())) {
+//                saveUser(update);
+//            } else {
+//                failedMessage(update.message().chat().id());
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
+    public void startMessage(Update update) {
+        String name = update.message().chat().firstName();
+        String msg = "Привет, " + name + "! Добро пожаловать в бот-гороскоп. Выберете гороскоп";
+
+//        updates.forEach(update -> {
+//            logger.info("Processing update: {}", update);
+//            String msg = update.message().text();
+//            if (msg.equals("/start")) {
+//                SendMessage message = new SendMessage(
+//                        update.message().chat().id(),
+//                        String.format("Здравствуйте %s, Добро пожаловать в бот-гороскоп.  Введите дату рождения в формате dd.MM.yyyy (пример: 12.02.2023) и вы узнаете, что ожидает данный знак зодиака.", update.message().chat().firstName())
+//                );
+//                logger.info("Start button has been activated ^)");
+//                telegramBot.execute(message);
+        long id = update.message().chat().id();
+        InlineKeyboardButton[] buttonsRow = {
+                new InlineKeyboardButton(GOROSKOP)};
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRow);
+        SendMessage sendMessage = new SendMessage(id, msg);
+        sendMessage.replyMarkup(inlineKeyboard);
+        telegramBot.execute(sendMessage);
+    }
+
+
+    private void processCallbackQuery(Update update) {
+        Long chatId = update.callbackQuery().message().chat().id();
+//
+        if (GOROSKOP.equalsIgnoreCase(update.callbackQuery().data())) {
+            createButtonClassicZodiac(chatId);
+//        } else if (CALLBACK_CHOOSE_SHELTER_CATS.equalsIgnoreCase(update.callbackQuery().data())) {
+//            createButtonInfoMenuForCatShelter(chatId);
+//        } else if (CALLBACK_SHOW_INFO_DOGS.equalsIgnoreCase(update.callbackQuery().data())) {
+//            sendShelterInfo(chatId, ShelterType.DOG);
+//        } else if (CALLBACK_SHOW_INFO_CATS.equalsIgnoreCase(update.callbackQuery().data())) {
+//            sendShelterInfo(chatId, ShelterType.CAT);
+//        } else if (CALLBACK_SHOW_MENU_REPORT.equalsIgnoreCase(update.callbackQuery().data())) {
+//            createButtonsReportMenu(chatId);
+//        } else if (CALLBACK_CHOOSE_SEND_REPORT.equalsIgnoreCase(update.callbackQuery().data())) {
+//            sendReportMessage(chatId);
+//        } else if (CALLBACK_CHOOSE_FORM_REPORT.equalsIgnoreCase(update.callbackQuery().data())) {
+//            sendReportForm(chatId);
+        }
+    }
+
+    private void createButtonInfoMenu(Long chatId, String callbackShowInfoDogs, String callbackShowInstructionDogs) {
+        String msg = "Здравствуйте %s, Добро пожаловать в бот-гороскоп.  Введите дату рождения в формате dd.MM.yyyy (пример: 12.02.2023) и вы узнаете, что ожидает данный знак зодиака. ";
+        InlineKeyboardButton[] buttonsRowForDogsShelter = {
+                new InlineKeyboardButton("Информация о питомнике \uD83C\uDFD8 ").callbackData(callbackShowInfoDogs)};
+        InlineKeyboardButton[] buttonsRowForDogsShelter2 = {
+                new InlineKeyboardButton(" \uD83D\uDC15 Информация о животных \uD83D\uDC08").callbackData(callbackShowInstructionDogs)};
+        InlineKeyboardButton[] buttonsRowForDogsShelter3 = {
+                new InlineKeyboardButton("Отчет \uD83D\uDCDA ").callbackData("report"),
+        };
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRowForDogsShelter, buttonsRowForDogsShelter2, buttonsRowForDogsShelter3);
+        SendMessage sendMessage = new SendMessage(chatId, msg);
+        sendMessage.replyMarkup(inlineKeyboard);
+        telegramBot.execute(sendMessage);
+    }
+
+    private void createButtonClassicZodiac(Long chatId) {
+        return;
+//    }
+    }
 }
