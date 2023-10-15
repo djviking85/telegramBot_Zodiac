@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 @Service
 
 public class TelegramBotUpdatesListener implements UpdatesListener {
+    // делаем логи по листенеру
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
 //    public TelegramBotUpdatesListener(TelegramBot telegramBot, NotificationTaskRepository notificationTaskRepository) {
