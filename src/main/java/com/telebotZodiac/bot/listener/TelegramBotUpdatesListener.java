@@ -20,6 +20,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     //    делаем статики кнопок
     private static final String GOROSKOP_CLASSIC_BUTTON = "Классический гороскоп \uD83D\uDC36";
     private static final String GOROSKOP2 = "Клас гороскоп \uD83D\uDC36";
+    private static final String CALLBACK_SHOW_INFO_CLASSIC = "SHOW_INFO_CLASSIC";
+    private static final String CALLBACK_SHOW_INSTRUCTION_CLASSIC = "SHOW_INSTRUCTION_CLASSIC";
     private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
     private static final String GOROSKOP3 = "Китай гороскоп \uD83D\uDC36";
 
@@ -114,7 +116,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //            sendReportForm(chatId);
         }
     }
-
+//доработать баттон инфо
     private void createButtonInfoMenu(Long chatId, String callbackShowInfoDogs, String callbackShowInstructionDogs) {
         String msg = "Здравствуйте %s, Добро пожаловать в бот-гороскоп.  Введите дату рождения в формате dd.MM.yyyy (пример: 12.02.2023) и вы узнаете, что ожидает данный знак зодиака. ";
         InlineKeyboardButton[] buttonsRowForDogsShelter = {
@@ -131,8 +133,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     private void createButtonClassicZodiac(Long chatId) {
-        return;
-//    }
+        createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CLASSIC, CALLBACK_SHOW_INSTRUCTION_CLASSIC);
     }
     private void createButtonChinaZodiac(Long chatId) {
         return;
