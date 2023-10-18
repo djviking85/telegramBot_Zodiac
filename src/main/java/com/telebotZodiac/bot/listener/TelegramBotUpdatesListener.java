@@ -18,8 +18,10 @@ import java.util.List;
 
 public class TelegramBotUpdatesListener implements UpdatesListener {
     //    делаем статики кнопок
-    private static final String GOROSKOP = "Классический гороскоп \uD83D\uDC36";
-    private static final String GOROSKOP2 = "Классический гороскоп \uD83D\uDC36";
+    private static final String GOROSKOP_CLASSIC_BUTTON = "Классический гороскоп \uD83D\uDC36";
+    private static final String GOROSKOP2 = "Клас гороскоп \uD83D\uDC36";
+    private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
+    private static final String GOROSKOP3 = "Китай гороскоп \uD83D\uDC36";
 
     // делаем логи по листенеру
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
@@ -65,7 +67,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     public void startMessage(Update update) {
         String name = update.message().chat().firstName();
-        String msg = "Привет, " + name + "! Добро пожаловать в бот-гороскоп. Выберете гороскоп";
+        String msg = "Привет, " + name + "! Добро пожаловать в бот-гороскоп." +
+                " Нами предоставлены гороскопы разных направлений," +
+                " вы по дате своего рождения можете выбрать свое направление и все дела. " +
+                "Мы более подробно расскажем кто вы и что вы Выберете гороскоп";
 
 //        updates.forEach(update -> {
 //            logger.info("Processing update: {}", update);
@@ -78,11 +83,14 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //                logger.info("Start button has been activated ^)");
 //                telegramBot.execute(message);
         long id = update.message().chat().id();
-//        InlineKeyboardButton[] buttonsRow = {
-//                new InlineKeyboardButton(GOROSKOP)};
-//        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRow);
+//        тут мы прикручиваем кнопки в основное меню
+        InlineKeyboardButton[] buttonsRow = {
+                new InlineKeyboardButton(GOROSKOP_CLASSIC_BUTTON).callbackData(GOROSKOP2)};
+        InlineKeyboardButton[] buttonsRow2 = {
+                new InlineKeyboardButton(GOROSKOP_CHINA_BUTTON).callbackData(GOROSKOP3)};
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRow, buttonsRow2);
         SendMessage sendMessage = new SendMessage(id, msg);
-//        sendMessage.replyMarkup(inlineKeyboard);
+        sendMessage.replyMarkup(inlineKeyboard);
         telegramBot.execute(sendMessage);
     }
 
@@ -90,10 +98,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private void processCallbackQuery(Update update) {
         Long chatId = update.callbackQuery().message().chat().id();
 //
-        if (GOROSKOP.equalsIgnoreCase(update.callbackQuery().data())) {
+        if (GOROSKOP_CLASSIC_BUTTON.equalsIgnoreCase(update.callbackQuery().data())) {
             createButtonClassicZodiac(chatId);
-//        } else if (CALLBACK_CHOOSE_SHELTER_CATS.equalsIgnoreCase(update.callbackQuery().data())) {
-//            createButtonInfoMenuForCatShelter(chatId);
+        } else if (GOROSKOP_CHINA_BUTTON.equalsIgnoreCase(update.callbackQuery().data())) {
+            createButtonChinaZodiac(chatId);
 //        } else if (CALLBACK_SHOW_INFO_DOGS.equalsIgnoreCase(update.callbackQuery().data())) {
 //            sendShelterInfo(chatId, ShelterType.DOG);
 //        } else if (CALLBACK_SHOW_INFO_CATS.equalsIgnoreCase(update.callbackQuery().data())) {
@@ -123,6 +131,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     private void createButtonClassicZodiac(Long chatId) {
+        return;
+//    }
+    }
+    private void createButtonChinaZodiac(Long chatId) {
         return;
 //    }
     }
