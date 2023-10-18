@@ -17,11 +17,15 @@ import java.util.List;
 @Service
 
 public class TelegramBotUpdatesListener implements UpdatesListener {
-    //    делаем статики кнопок
+    //    делаем статики кнопок о классике
     private static final String GOROSKOP_CLASSIC_BUTTON = "Классический гороскоп \uD83D\uDC36";
     private static final String GOROSKOP2 = "Клас гороскоп \uD83D\uDC36";
     private static final String CALLBACK_SHOW_INFO_CLASSIC = "SHOW_INFO_CLASSIC";
     private static final String CALLBACK_SHOW_INSTRUCTION_CLASSIC = "SHOW_INSTRUCTION_CLASSIC";
+
+
+//    делаем кнопки о китайском
+
     private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
     private static final String GOROSKOP3 = "Китай гороскоп \uD83D\uDC36";
 
@@ -117,16 +121,14 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         }
     }
 //доработать баттон инфо
-    private void createButtonInfoMenu(Long chatId, String callbackShowInfoDogs, String callbackShowInstructionDogs) {
-        String msg = "Здравствуйте %s, Добро пожаловать в бот-гороскоп.  Введите дату рождения в формате dd.MM.yyyy (пример: 12.02.2023) и вы узнаете, что ожидает данный знак зодиака. ";
-        InlineKeyboardButton[] buttonsRowForDogsShelter = {
-                new InlineKeyboardButton("Информация о питомнике \uD83C\uDFD8 ").callbackData(callbackShowInfoDogs)};
-        InlineKeyboardButton[] buttonsRowForDogsShelter2 = {
-                new InlineKeyboardButton(" \uD83D\uDC15 Информация о животных \uD83D\uDC08").callbackData(callbackShowInstructionDogs)};
-        InlineKeyboardButton[] buttonsRowForDogsShelter3 = {
-                new InlineKeyboardButton("Отчет \uD83D\uDCDA ").callbackData("report"),
-        };
-        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRowForDogsShelter, buttonsRowForDogsShelter2, buttonsRowForDogsShelter3);
+    private void createButtonInfoMenu(Long chatId, String dataUser, String dataGoroscop) {
+        String msg = "выбираем действие";
+        InlineKeyboardButton[] buttonsRowForDataUser = {
+                new InlineKeyboardButton("ВВодим свои данные \uD83C\uDFD8 ").callbackData(dataUser)};
+        InlineKeyboardButton[] buttonsRowForDataGoroscop = {
+                new InlineKeyboardButton(" \uD83D\uDC15 Информация о гороскопе \uD83D\uDC08").callbackData(dataGoroscop)};
+
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRowForDataUser, buttonsRowForDataGoroscop);
         SendMessage sendMessage = new SendMessage(chatId, msg);
         sendMessage.replyMarkup(inlineKeyboard);
         telegramBot.execute(sendMessage);
