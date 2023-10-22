@@ -31,8 +31,8 @@ public class ShelterService {
         if (shelter.isPresent()) {
             return shelter.get().getDescription();
         }
-        log.info("в базе данных нет питомников с таким животным");
-        return "Тут пока что пусто :(";
+        log.info("запускаем getInfo");
+        return "Тут заглушка на getInfo :(";
     }
 
     public String getInstruction(ShelterGoroskop type) {

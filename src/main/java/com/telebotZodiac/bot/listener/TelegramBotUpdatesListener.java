@@ -28,10 +28,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final String CALLBACK_SHOW_INSTRUCTION_CLASSIC = "SHOW_INSTRUCTION_CLASSIC";
 
 
+
 //    делаем кнопки о китайском
 
     private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
     private static final String GOROSKOP3 = "Китай гороскоп \uD83D\uDC36";
+    private static final String CALLBACK_SHOW_INFO_CHINA = "SHOW_INFO_CHINA";
+    private static final String CALLBACK_SHOW_INSTRUCTION_CHINA = "SHOW_INSTRUCTION_CHINA";
 
 
     private static final Pattern PATTERN = Pattern.compile("(^[+|8][0-9\\s]+)\\s(\\w*@.+\\D$)");
@@ -40,7 +43,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
 
 
-       @Autowired
+//       @Autowired
     private TelegramBot telegramBot;
 
     private final ShelterService shelterService;
@@ -100,9 +103,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         long id = update.message().chat().id();
 //        тут мы прикручиваем кнопки в основное меню
         InlineKeyboardButton[] buttonsRow = {
-                new InlineKeyboardButton(GOROSKOP_CLASSIC_BUTTON).callbackData(GOROSKOP2)};
+                new InlineKeyboardButton("создаем баттон гороскопа классического").callbackData(GOROSKOP_CLASSIC_BUTTON)};
         InlineKeyboardButton[] buttonsRow2 = {
-                new InlineKeyboardButton(GOROSKOP_CHINA_BUTTON).callbackData(GOROSKOP3)};
+                new InlineKeyboardButton(GOROSKOP_CHINA_BUTTON).callbackData(GOROSKOP_CHINA_BUTTON)};
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRow, buttonsRow2);
         SendMessage sendMessage = new SendMessage(id, msg);
         sendMessage.replyMarkup(inlineKeyboard);
@@ -114,10 +117,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         Long chatId = update.callbackQuery().message().chat().id();
 //
         if (GOROSKOP_CLASSIC_BUTTON.equalsIgnoreCase(update.callbackQuery().data())) {
-            createButtonClassicZodiac(chatId);
+            createButtonClassicZodiacShelter(chatId);
         } else if (GOROSKOP_CHINA_BUTTON.equalsIgnoreCase(update.callbackQuery().data())) {
-            createButtonChinaZodiac(chatId);
-        } else if (CALLBACK_SHOW_INFO_CLASSIC.equalsIgnoreCase(update.callbackQuery().data())) {
+            createButtonChinaZodiacShelter(chatId);
+        } else if (GOROSKOP2.equalsIgnoreCase(update.callbackQuery().data())) {
             sendShelterInfo(chatId, ShelterGoroskop.CLASSIC);
 //        } else if (CALLBACK_SHOW_INFO_CATS.equalsIgnoreCase(update.callbackQuery().data())) {
 //            sendShelterInfo(chatId, ShelterType.CAT);
@@ -131,23 +134,24 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 //доработать баттон инфо
     private void createButtonInfoMenu(Long chatId, String dataUser, String dataGoroscop) {
-        String msg = "выбираем действие";
+        String msg = "выбираем действие, кликабельную иконку";
         InlineKeyboardButton[] buttonsRowForDataUser = {
-                new InlineKeyboardButton("ВВодим свои данные \uD83C\uDFD8 ").callbackData(dataUser)};
+                new InlineKeyboardButton("ВВодим свои данные - по дате дать знак зодиака \uD83C\uDFD8 ").callbackData(dataUser)};
         InlineKeyboardButton[] buttonsRowForDataGoroscop = {
-                new InlineKeyboardButton(" \uD83D\uDC15 Информация о гороскопе \uD83D\uDC08").callbackData(dataGoroscop)};
+                new InlineKeyboardButton(" \uD83D\uDC15 Информация о гороскопе  - тут тупо текст \uD83D\uDC08").callbackData(dataGoroscop)};
 
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRowForDataUser, buttonsRowForDataGoroscop);
         SendMessage sendMessage = new SendMessage(chatId, msg);
         sendMessage.replyMarkup(inlineKeyboard);
         telegramBot.execute(sendMessage);
+
     }
 
-    private void createButtonClassicZodiac(Long chatId) {
+    private void createButtonClassicZodiacShelter(Long chatId) {
         createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CLASSIC, CALLBACK_SHOW_INSTRUCTION_CLASSIC);
     }
-    private void createButtonChinaZodiac(Long chatId) {
-        return;
+    private void createButtonChinaZodiacShelter(Long chatId) {
+        createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CHINA, CALLBACK_SHOW_INSTRUCTION_CHINA);
 //    }
     }
     private void sendShelterInfo(Long chatId, ShelterGoroskop type) {
