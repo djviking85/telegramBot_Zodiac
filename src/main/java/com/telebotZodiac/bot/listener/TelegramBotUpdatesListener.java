@@ -6,6 +6,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.telebotZodiac.bot.service.ShelterService;
+import com.telebotZodiac.bot.shelter.ShelterGoroskop;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 
@@ -29,6 +33,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
     private static final String GOROSKOP3 = "Китай гороскоп \uD83D\uDC36";
 
+
+    private static final Pattern PATTERN = Pattern.compile("(^[+|8][0-9\\s]+)\\s(\\w*@.+\\D$)");
     // делаем логи по листенеру
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
@@ -37,9 +43,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
        @Autowired
     private TelegramBot telegramBot;
 
+    private final ShelterService shelterService;
 
-    public TelegramBotUpdatesListener(TelegramBot telegramBot) {
+
+    public TelegramBotUpdatesListener(TelegramBot telegramBot, ShelterService shelterService) {
         this.telegramBot = telegramBot;
+        this.shelterService = shelterService;
     }
 
     @PostConstruct
@@ -56,16 +65,16 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             logger.info("Processing update: {}", update);
             if (update.message() != null && "/start".equals(update.message().text())) {
                 startMessage(update);
-//            } else if (update.callbackQuery() != null) {
-//                processCallbackQuery(update);
+            } else if (update.callbackQuery() != null) {
+                processCallbackQuery(update);
 //            } else if (update.message().photo() != null) {
 //                saveReportPhoto(update);
 //            } else if (update.message() != null && "Отчет".equalsIgnoreCase(update.message().text().substring(0, 5))) {
 //                saveReport(update);
 //            } else if (update.message() != null && checkMessagePattern(update.message().text())) {
 //                saveUser(update);
-//            } else {
-//                failedMessage(update.message().chat().id());
+            } else {
+                failedMessage(update.message().chat().id());
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
@@ -108,8 +117,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             createButtonClassicZodiac(chatId);
         } else if (GOROSKOP_CHINA_BUTTON.equalsIgnoreCase(update.callbackQuery().data())) {
             createButtonChinaZodiac(chatId);
-//        } else if (CALLBACK_SHOW_INFO_DOGS.equalsIgnoreCase(update.callbackQuery().data())) {
-//            sendShelterInfo(chatId, ShelterType.DOG);
+        } else if (CALLBACK_SHOW_INFO_CLASSIC.equalsIgnoreCase(update.callbackQuery().data())) {
+            sendShelterInfo(chatId, ShelterGoroskop.CLASSIC);
 //        } else if (CALLBACK_SHOW_INFO_CATS.equalsIgnoreCase(update.callbackQuery().data())) {
 //            sendShelterInfo(chatId, ShelterType.CAT);
 //        } else if (CALLBACK_SHOW_MENU_REPORT.equalsIgnoreCase(update.callbackQuery().data())) {
@@ -140,5 +149,19 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private void createButtonChinaZodiac(Long chatId) {
         return;
 //    }
+    }
+    private void sendShelterInfo(Long chatId, ShelterGoroskop type) {
+        SendMessage sendMessage = new SendMessage(chatId, shelterService.getInfo(type));
+        telegramBot.execute(sendMessage);
+    }
+    private void failedMessage(Long chatId) {
+        String msg = "Извините, я не понимаю что делать";
+        SendMessage sendMessage = new SendMessage(chatId, msg);
+        telegramBot.execute(sendMessage);
+    }
+
+    private boolean checkMessagePattern(String text) {
+        Matcher matcher = PATTERN.matcher(text);
+        return matcher.matches();
     }
 }
