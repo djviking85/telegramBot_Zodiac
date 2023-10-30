@@ -31,7 +31,7 @@ public class ShelterService {
         if (shelter.isPresent()) {
             return shelter.get().getDescription();
         }
-        log.info("запускаем getInfo");
+        log.info("запускаем Дескрипшн (инфо) гороскопа");
         return "Тут заглушка на getInfo :(";
     }
 
@@ -40,7 +40,7 @@ public class ShelterService {
         if (shelter.isPresent()) {
             return shelter.get().getInstruction();
         }
-        log.info("в базе данных нет питомников с таким животным");
+        log.info("Запускаем по дате рождения методы");
         return "Тут пока что пусто :(";
     }
 }
