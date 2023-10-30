@@ -22,8 +22,7 @@ import java.util.regex.Pattern;
 
 public class TelegramBotUpdatesListener implements UpdatesListener {
     //    делаем статики кнопок о классике
-    private static final String GOROSKOP_CLASSIC_BUTTON = "Классический гороскоп \uD83D\uDC36";
-    private static final String GOROSKOP2 = "Клас гороскоп \uD83D\uDC36";
+    private static final String GOROSKOP_CLASSIC_BUTTON = "Классический гороскоп ♈♉♊♋♌♍♎";
     private static final String CALLBACK_SHOW_INFO_CLASSIC = "SHOW_INFO_CLASSIC";
     private static final String CALLBACK_SHOW_DESCRIPTION_CLASSIC = "SHOW_INSTRUCTION_CLASSIC";
 
@@ -32,7 +31,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //    делаем кнопки о китайском
 
     private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
-    private static final String GOROSKOP3 = "Китай гороскоп \uD83D\uDC36";
     private static final String CALLBACK_SHOW_INFO_CHINA = "SHOW_INFO_CHINA";
     private static final String CALLBACK_SHOW_DESCRIPTION_CHINA = "SHOW_INSTRUCTION_CHINA";
 
@@ -86,9 +84,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     public void startMessage(Update update) {
         String name = update.message().chat().firstName();
         String msg = "Привет, " + name + "! Добро пожаловать в бот-гороскоп." +
-                " Нами предоставлены гороскопы разных направлений," +
-                " вы по дате своего рождения можете выбрать свое направление и все дела. " +
-                "Мы более подробно расскажем кто вы и что вы Выберете гороскоп";
+                " Нами предоставлены гороскопы разных направлений: Классический и Китайский" +
+                " Вы можете выбрать информацию о гороскопе,  " +
+                "а так же по дате рождения вы можете узнать чуть больше о себе.";
 
 //        updates.forEach(update -> {
 //            logger.info("Processing update: {}", update);
@@ -103,7 +101,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         long id = update.message().chat().id();
 //        тут мы прикручиваем кнопки в основное меню
         InlineKeyboardButton[] buttonsRow = {
-                new InlineKeyboardButton("создаем баттон гороскопа классического").callbackData(GOROSKOP_CLASSIC_BUTTON)};
+                new InlineKeyboardButton(GOROSKOP_CLASSIC_BUTTON).callbackData(GOROSKOP_CLASSIC_BUTTON)};
         InlineKeyboardButton[] buttonsRow2 = {
                 new InlineKeyboardButton(GOROSKOP_CHINA_BUTTON).callbackData(GOROSKOP_CHINA_BUTTON)};
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRow, buttonsRow2);
@@ -140,11 +138,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 //доработать баттон инфо
     private void createButtonInfoMenu(Long chatId, String dataUser, String dataGoroscop) {
-        String msg = "выбираем действие, кликабельную иконку";
+        String msg = "Выберите действие:";
         InlineKeyboardButton[] buttonsRowForDataUser = {
-                new InlineKeyboardButton("ВВодим свои данные - по дате дать знак зодиака \uD83C\uDFD8 ").callbackData(dataUser)};
+                new InlineKeyboardButton("Вводим свои данные - по дате ⌨ ").callbackData(dataUser)};
         InlineKeyboardButton[] buttonsRowForDataGoroscop = {
-                new InlineKeyboardButton(" \uD83D\uDC15 Информация о гороскопе  - тут тупо текст \uD83D\uDC08").callbackData(dataGoroscop)};
+                new InlineKeyboardButton(" \uD83D\uDEC8 Информация о гороскопе \uD83E\uDDD0").callbackData(dataGoroscop)};
 
         InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup(buttonsRowForDataUser, buttonsRowForDataGoroscop);
         SendMessage sendMessage = new SendMessage(chatId, msg);
