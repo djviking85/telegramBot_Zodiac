@@ -26,7 +26,7 @@ public class ShelterService {
      *
      * @param type - Shelter type
      */
-    public String getInfo(ShelterGoroskop type) {
+    public String getDescription(ShelterGoroskop type) {
         Optional<Shelter> shelter = shelterRepository.findFirstByType(type);
         if (shelter.isPresent()) {
             return shelter.get().getDescription();

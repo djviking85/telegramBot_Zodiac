@@ -25,7 +25,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final String GOROSKOP_CLASSIC_BUTTON = "Классический гороскоп \uD83D\uDC36";
     private static final String GOROSKOP2 = "Клас гороскоп \uD83D\uDC36";
     private static final String CALLBACK_SHOW_INFO_CLASSIC = "SHOW_INFO_CLASSIC";
-    private static final String CALLBACK_SHOW_INSTRUCTION_CLASSIC = "SHOW_INSTRUCTION_CLASSIC";
+    private static final String CALLBACK_SHOW_DESCRIPTION_CLASSIC = "SHOW_INSTRUCTION_CLASSIC";
 
 
 
@@ -34,7 +34,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
     private static final String GOROSKOP3 = "Китай гороскоп \uD83D\uDC36";
     private static final String CALLBACK_SHOW_INFO_CHINA = "SHOW_INFO_CHINA";
-    private static final String CALLBACK_SHOW_INSTRUCTION_CHINA = "SHOW_INSTRUCTION_CHINA";
+    private static final String CALLBACK_SHOW_DESCRIPTION_CHINA = "SHOW_INSTRUCTION_CHINA";
 
 
     private static final Pattern PATTERN = Pattern.compile("(^[+|8][0-9\\s]+)\\s(\\w*@.+\\D$)");
@@ -120,8 +120,14 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             createButtonClassicZodiacShelter(chatId);
         } else if (GOROSKOP_CHINA_BUTTON.equalsIgnoreCase(update.callbackQuery().data())) {
             createButtonChinaZodiacShelter(chatId);
-        } else if (GOROSKOP2.equalsIgnoreCase(update.callbackQuery().data())) {
-            sendShelterInfo(chatId, ShelterGoroskop.CLASSIC);
+        } else if (CALLBACK_SHOW_DESCRIPTION_CLASSIC.equalsIgnoreCase(update.callbackQuery().data())) {
+            sendShelterDescription(chatId, ShelterGoroskop.CLASSIC);
+        } else if (CALLBACK_SHOW_DESCRIPTION_CHINA.equalsIgnoreCase(update.callbackQuery().data())) {
+            sendShelterDescription(chatId, ShelterGoroskop.CHINA);
+        } else if (CALLBACK_SHOW_INFO_CLASSIC.equalsIgnoreCase(update.callbackQuery().data())) {
+            sendShelterInstruction(chatId, ShelterGoroskop.CLASSIC);
+        } else if (CALLBACK_SHOW_INFO_CHINA.equalsIgnoreCase(update.callbackQuery().data())) {
+            sendShelterInstruction(chatId, ShelterGoroskop.CHINA);
 //        } else if (CALLBACK_SHOW_INFO_CATS.equalsIgnoreCase(update.callbackQuery().data())) {
 //            sendShelterInfo(chatId, ShelterType.CAT);
 //        } else if (CALLBACK_SHOW_MENU_REPORT.equalsIgnoreCase(update.callbackQuery().data())) {
@@ -148,14 +154,18 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     private void createButtonClassicZodiacShelter(Long chatId) {
-        createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CLASSIC, CALLBACK_SHOW_INSTRUCTION_CLASSIC);
+        createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CLASSIC, CALLBACK_SHOW_DESCRIPTION_CLASSIC);
     }
     private void createButtonChinaZodiacShelter(Long chatId) {
-        createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CHINA, CALLBACK_SHOW_INSTRUCTION_CHINA);
+        createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CHINA, CALLBACK_SHOW_DESCRIPTION_CHINA);
 //    }
     }
-    private void sendShelterInfo(Long chatId, ShelterGoroskop type) {
-        SendMessage sendMessage = new SendMessage(chatId, shelterService.getInfo(type));
+    private void sendShelterDescription(Long chatId, ShelterGoroskop type) {
+        SendMessage sendMessage = new SendMessage(chatId, shelterService.getDescription(type));
+        telegramBot.execute(sendMessage);
+    }
+    private void sendShelterInstruction(Long chatId, ShelterGoroskop type) {
+        SendMessage sendMessage = new SendMessage(chatId, shelterService.getInstruction(type));
         telegramBot.execute(sendMessage);
     }
     private void failedMessage(Long chatId) {
