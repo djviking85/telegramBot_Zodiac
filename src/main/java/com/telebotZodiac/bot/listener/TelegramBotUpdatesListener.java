@@ -30,7 +30,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
 //    делаем кнопки о китайском
 
-    private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп \uD83D\uDC37";
+    private static final String GOROSKOP_CHINA_BUTTON = "Китайский гороскоп 🐀🐂🐅🐇🐉🐍🐎";
     private static final String CALLBACK_SHOW_INFO_CHINA = "SHOW_INFO_CHINA";
     private static final String CALLBACK_SHOW_DESCRIPTION_CHINA = "SHOW_INSTRUCTION_CHINA";
 
