@@ -15,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+
 
 @Service
 
@@ -25,7 +28,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private static final String GOROSKOP_CLASSIC_BUTTON = "Классический гороскоп ♈♉♊♋♌♍♎";
     private static final String CALLBACK_SHOW_INFO_CLASSIC = "SHOW_INFO_CLASSIC";
     private static final String CALLBACK_SHOW_DESCRIPTION_CLASSIC = "SHOW_INSTRUCTION_CLASSIC";
-
 
 
 //    делаем кнопки о китайском
@@ -40,8 +42,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
 
-
-//       @Autowired
+    //       @Autowired
     private TelegramBot telegramBot;
 
     private final ShelterService shelterService;
@@ -68,18 +69,62 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 startMessage(update);
             } else if (update.callbackQuery() != null) {
                 processCallbackQuery(update);
-//            } else if (update.message().photo() != null) {
-//                saveReportPhoto(update);
-//            } else if (update.message() != null && "Отчет".equalsIgnoreCase(update.message().text().substring(0, 5))) {
-//                saveReport(update);
-//            } else if (update.message() != null && checkMessagePattern(update.message().text())) {
-//                saveUser(update);
-            } else {
-                failedMessage(update.message().chat().id());
+
+//так мы получаем водолея при введении 01.02 - те рабочий код
+            } else if (update.message() != null && "01.02".equals(update.message().text())) {
+                String messageText = update.message().text();
+                String name = update.message().chat().firstName();
+
+                if (update.hasMessage() && update.getMessage().hasText()) {
+                    String messageText = update.getMessage().getText();
+                    long chatId = update.getMessage().getChatId();
+
+                    if (messageText.matches("[0-3]?[0-9].[0-1]?[0-9]")) {
+                        String[] dateParts = messageText.split("\\.");
+                        int day = Integer.parseInt(dateParts[0]);
+                        int month = Integer.parseInt(dateParts[1]);
+
+                        String zodiacSign = getZodiacSign(day, month);
+
+                        sendMessage(chatId, "Ваш знак зодиака: " + zodiacSign);
+                    } else {
+                        sendMessage(chatId, "Пожалуйста, введите день и месяц в формате 'дд.мм'");
+                    }
+                }
+
+                String msg = "Привет, " + name;
+                long chatId = update.message().chat().id();
+
+                SendMessage sendMessage = new SendMessage(chatId, msg);
+                telegramBot.execute(sendMessage);
+
+//                if (update.hasMessage() && update.getMessage().hasText()) {
+//                    String messageText = update.getMessage().getText();
+//                    long chatId = update.getMessage().getChatId();
+
+                    if (messageText.matches("[0-3]?[0-9].[0-1]?[0-9]")) {
+                        String[] dateParts = messageText.split("\\.");
+                        int day = Integer.parseInt(dateParts[0]);
+                        int month = Integer.parseInt(dateParts[1]);
+//
+                        String zodiacSign = getZodiacSign(day, month);
+//
+                      SendMessage sendMessage2 = new SendMessage(chatId, "Ваш знак зодиака: " + zodiacSign);
+                        telegramBot.execute(sendMessage2);
+                    } else {
+                        SendMessage sendMessage3 = new SendMessage(chatId, "Пожалуйста, введите день и месяц в формате 'дд.мм'");
+                        telegramBot.execute(sendMessage3);
+                    }
+
+
             }
+//            else {
+//                failedMessage(update.message().chat().id());
+//            }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
+
 
     public void startMessage(Update update) {
         String name = update.message().chat().firstName();
@@ -136,7 +181,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //            sendReportForm(chatId);
         }
     }
-//доработать баттон инфо
+
+    //доработать баттон инфо
     private void createButtonInfoMenu(Long chatId, String dataUser, String dataGoroscop) {
         String msg = "Выберите действие:";
         InlineKeyboardButton[] buttonsRowForDataUser = {
@@ -154,18 +200,22 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private void createButtonClassicZodiacShelter(Long chatId) {
         createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CLASSIC, CALLBACK_SHOW_DESCRIPTION_CLASSIC);
     }
+
     private void createButtonChinaZodiacShelter(Long chatId) {
         createButtonInfoMenu(chatId, CALLBACK_SHOW_INFO_CHINA, CALLBACK_SHOW_DESCRIPTION_CHINA);
 //    }
     }
+
     private void sendShelterDescription(Long chatId, ShelterGoroskop type) {
         SendMessage sendMessage = new SendMessage(chatId, shelterService.getDescription(type));
         telegramBot.execute(sendMessage);
     }
+
     private void sendShelterInstruction(Long chatId, ShelterGoroskop type) {
         SendMessage sendMessage = new SendMessage(chatId, shelterService.getInstruction(type));
         telegramBot.execute(sendMessage);
     }
+
     private void failedMessage(Long chatId) {
         String msg = "Извините, я не понимаю что делать";
         SendMessage sendMessage = new SendMessage(chatId, msg);
@@ -175,5 +225,39 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     private boolean checkMessagePattern(String text) {
         Matcher matcher = PATTERN.matcher(text);
         return matcher.matches();
+    }
+
+
+
+    private String getZodiacSign(int day, int month) {
+        // Реализуйте логику определения знака зодиака здесь
+
+        // Пример реализации:
+        if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) {
+            return "Овен";
+        } else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) {
+            return "Телец";
+        } else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) {
+            return "Близнецы";
+        } else if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) {
+            return "Рак";
+        } else if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) {
+            return "Лев";
+        } else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) {
+            return "Дева";
+        } else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) {
+            return "Весы";
+        } else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) {
+            return "Скорпион";
+        } else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) {
+            return "Стрелец";
+        } else if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) {
+            return "Козерог";
+        } else if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) {
+            return "Водолей";
+        } else {
+            return "Рыбы";
+        }
+//
     }
 }
