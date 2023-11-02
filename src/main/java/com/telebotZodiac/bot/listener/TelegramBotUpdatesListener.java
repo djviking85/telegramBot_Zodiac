@@ -74,37 +74,44 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //            } else if (update.message() != null && "01.02".equals(update.message().text())) {
 
             }
+            else if (update.message()!=null && update.message().text().equals(update.message().text())) {
+                String messageText2 = update.message().text();
+                String name = update.message().chat().firstName();
+
+                String msg = "Привет, китайщина " + name;
+                long chatId = update.message().chat().id();
+
+                SendMessage sendMessage = new SendMessage(chatId, msg);
+                telegramBot.execute(sendMessage);
+
+                if (messageText2.matches("\\d{2}:\\d{2}:\\d{4}")) {
+                    // Парсим день, месяц и год из текста
+                    String[] dateChinaParts = messageText2.split(":");
+
+                    int day = Integer.parseInt(dateChinaParts[0]);
+                    int month = Integer.parseInt(dateChinaParts[1]);
+                    int year = Integer.parseInt(dateChinaParts[2]);
+
+                    String horoscopeChina = calculateChineseHoroscope(day, month, year);
+                    SendMessage sendMessageChinaCorrect = new SendMessage(chatId, horoscopeChina);
+                    telegramBot.execute(sendMessageChinaCorrect);
+                }
+                else {
+                    SendMessage sendMessageChinaWrong = new SendMessage(chatId, "Пожалуйста, введите дату в формате dd:MM:HHHH");
+                    telegramBot.execute(sendMessageChinaWrong);
+                }
+            }
+//проблема тут вот в чем - надо сделать разделение между евро и китаем
             else if (update.message() != null && update.message().text().equals(update.message().text())) {
 
                 String messageText = update.message().text();
                 String name = update.message().chat().firstName();
-
-//                if (update.hasMessage() && update.getMessage().hasText()) {
-//                    String messageText = update.getMessage().getText();
-//                    long chatId = update.getMessage().getChatId();
-//
-//                    if (messageText.matches("[0-3]?[0-9].[0-1]?[0-9]")) {
-//                        String[] dateParts = messageText.split("\\.");
-//                        int day = Integer.parseInt(dateParts[0]);
-//                        int month = Integer.parseInt(dateParts[1]);
-//
-//                        String zodiacSign = getZodiacSign(day, month);
-//
-//                        sendMessage(chatId, "Ваш знак зодиака: " + zodiacSign);
-//                    } else {
-//                        sendMessage(chatId, "Пожалуйста, введите день и месяц в формате 'дд.мм'");
-//                    }
-//                }
 
                 String msg = "Привет, " + name;
                 long chatId = update.message().chat().id();
 
                 SendMessage sendMessage = new SendMessage(chatId, msg);
                 telegramBot.execute(sendMessage);
-
-//                if (update.hasMessage() && update.getMessage().hasText()) {
-//                    String messageText = update.getMessage().getText();
-//                    long chatId = update.getMessage().getChatId();
 
                     if (messageText.matches("[0-3]?[0-9].[0-1]?[0-9]")) {
                         String[] dateParts = messageText.split("\\.");
@@ -119,8 +126,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                         SendMessage sendMessage3 = new SendMessage(chatId, "Пожалуйста, введите день и месяц в формате 'дд.мм'");
                         telegramBot.execute(sendMessage3);
                     }
-
-
             }
 //            else {
 //                failedMessage(update.message().chat().id());
@@ -230,13 +235,35 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         Matcher matcher = PATTERN.matcher(text);
         return matcher.matches();
     }
+    private String calculateChineseHoroscope(int day, int month, int year) {
+        // Знаки китайского зодиака
+        String[] chineseZodiacSigns = {
+                "Крыса", "Бык", "Тигр", "Кролик", "Дракон", "Змея",
+                "Лошадь", "Овца", "Обезьяна", "Петух", "Собака", "Свинья"
+        };
 
+        // Год начала китайского календаря (китайский год 1)
+        int startYear = 1924;
+
+        // Рассчитываем китайский год на основе года рождения
+        int chineseYear = (year - startYear) % 60;
+
+        // Рассчитываем китайский месяц (просто используем месяц из даты)
+        int chineseMonth = month;
+
+        // Рассчитываем китайский день (просто используем день из даты)
+        int chineseDay = day;
+
+        // Определяем знак китайского зодиака
+        String zodiacSign = chineseZodiacSigns[chineseYear % 12];
+
+        return "Ваш китайский знак зодиака: " + zodiacSign;
+    }
 
 
     private String getZodiacSign(int day, int month) {
-        // Реализуйте логику определения знака зодиака здесь
 
-        // Пример реализации:
+
         if ((month == 3 && day >= 21 && day <=31 ) || (month == 4 && day <= 19)) {
             return oven();
         } else if ((month == 4 && day >= 20 && day <= 30) || (month == 5 && day <= 20)) {
