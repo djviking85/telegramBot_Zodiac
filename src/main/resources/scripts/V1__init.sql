@@ -104,10 +104,10 @@ CREATE TABLE users
 
 );
 
-CREATE TABLE report
-(
-    id         BIGINT,
-    users_id    BIGINT,
-    report_text TEXT,
-    FOREIGN KEY (users_id) REFERENCES users(id)
-)
+-- CREATE TABLE report
+-- (
+--     id         BIGINT,
+--     users_id    BIGINT,
+--     report_text TEXT,
+--     FOREIGN KEY (users_id) REFERENCES users(id)
+-- )
