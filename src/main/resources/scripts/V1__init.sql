@@ -94,20 +94,12 @@ VALUES ('Классический гороскоп (шелтер нейм)', '
        К иньским годам относятся четные – Бык, Кролик, Змея (инь/ян), Коза (Овца), Петух, Свинья.', 'CHINA',
 'Пожалуйста, введите 🖮 дату своего рождения в формате ДД.ММ.ГГГГ. (Например 23.01.2014) ');
 
-CREATE TABLE users
-(
-    id      BIGINT PRIMARY KEY,
-    name    TEXT,
-    email   TEXT,
-    phone   TEXT,
-    chat_id  BIGINT
-
-);
-
--- CREATE TABLE report
+-- CREATE TABLE users
 -- (
---     id         BIGINT,
---     users_id    BIGINT,
---     report_text TEXT,
---     FOREIGN KEY (users_id) REFERENCES users(id)
--- )
+--     id      BIGINT PRIMARY KEY,
+--     name    TEXT,
+--     email   TEXT,
+--     phone   TEXT,
+--     chat_id  BIGINT
+--
+-- );

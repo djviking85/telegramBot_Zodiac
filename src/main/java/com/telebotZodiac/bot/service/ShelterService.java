@@ -9,9 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-/**
- * This class implements working with a database to receive or receive the necessary information
- */
 @Slf4j
 @Service
 public class ShelterService {
@@ -21,11 +18,6 @@ public class ShelterService {
         this.shelterRepository = shelterRepository;
     }
 
-    /**
-     * Method for obtaining information about the nursery, depending on the selected type
-     *
-     * @param type - Shelter type
-     */
     public String getDescription(ShelterGoroskop type) {
         Optional<Shelter> shelter = shelterRepository.findFirstByType(type);
         if (shelter.isPresent()) {
