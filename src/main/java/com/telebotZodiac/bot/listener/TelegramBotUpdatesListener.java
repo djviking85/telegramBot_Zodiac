@@ -20,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
 @Service
 
 public class TelegramBotUpdatesListener implements UpdatesListener {
@@ -73,12 +72,11 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //так мы получаем водолея при введении 01.02 - те рабочий код
 //            } else if (update.message() != null && "01.02".equals(update.message().text())) {
 
-            }
-            else if (update.message()!=null && update.message().text().equals(update.message().text())) {
+            } else if (update.message() != null && update.message().text().equals(update.message().text())) {
                 String messageText2 = update.message().text();
                 String name = update.message().chat().firstName();
 
-                String msg = "Привет, китайщина " + name;
+                String msg = "Привет, человек мира:  " + name;
                 long chatId = update.message().chat().id();
 
                 SendMessage sendMessage = new SendMessage(chatId, msg);
@@ -89,29 +87,28 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     String[] dateChinaParts = messageText2.split(":");
 
                     int day = Integer.parseInt(dateChinaParts[0]);
+//                    if (day <= 0 && day > 31) {
+//                        System.out.println("инкореркт дей");
+//                    }
                     int month = Integer.parseInt(dateChinaParts[1]);
                     int year = Integer.parseInt(dateChinaParts[2]);
 
                     String horoscopeChina = calculateChineseHoroscope(day, month, year);
+
+
                     SendMessage sendMessageChinaCorrect = new SendMessage(chatId, horoscopeChina);
                     telegramBot.execute(sendMessageChinaCorrect);
-                }
-                else {
-                    SendMessage sendMessageChinaWrong = new SendMessage(chatId, "Пожалуйста, введите дату в формате dd:MM:HHHH");
-                    telegramBot.execute(sendMessageChinaWrong);
-                }
-            }
-//проблема тут вот в чем - надо сделать разделение между евро и китаем
-            else if (update.message() != null && update.message().text().equals(update.message().text())) {
 
-                String messageText = update.message().text();
-                String name = update.message().chat().firstName();
+                } else if (update.message() != null && update.message().text().equals(update.message().text())) {
 
-                String msg = "Привет, " + name;
-                long chatId = update.message().chat().id();
+                    String messageText = update.message().text();
+                    String name2 = update.message().chat().firstName();
 
-                SendMessage sendMessage = new SendMessage(chatId, msg);
-                telegramBot.execute(sendMessage);
+//                    String msg2 = "Привет, нужно корректно или или " + name2;
+                    long chatId2 = update.message().chat().id();
+
+//                    SendMessage sendMessage3 = new SendMessage(chatId2, msg2);
+//                    telegramBot.execute(sendMessage3);
 
                     if (messageText.matches("[0-3]?[0-9].[0-1]?[0-9]")) {
                         String[] dateParts = messageText.split("\\.");
@@ -120,13 +117,45 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //
                         String zodiacSign = getZodiacSign(day, month);
 //
-                      SendMessage sendMessage2 = new SendMessage(chatId, "Ваш знак зодиака: " + zodiacSign);
+                        SendMessage sendMessage2 = new SendMessage(chatId2, "Ваш знак зодиака: " + zodiacSign);
                         telegramBot.execute(sendMessage2);
                     } else {
-                        SendMessage sendMessage3 = new SendMessage(chatId, "Пожалуйста, введите день и месяц в формате 'дд.мм'");
-                        telegramBot.execute(sendMessage3);
+                        SendMessage sendMessage4 = new SendMessage(chatId, "Пожалуйста, введите день и месяц в формате 'дд.мм' (Пример 19.11) - для европейского календаря, а вот для китайского надо ввести формат дд:мм:гггг , пример 19:11:1985");
+                        telegramBot.execute(sendMessage4);
                     }
+                }
+
+//                {
+//                    SendMessage sendMessageChinaWrong = new SendMessage(chatId, "Пожалуйста, введите дату в формате dd:MM:HHHH");
+//                    telegramBot.execute(sendMessageChinaWrong);
+//                }
             }
+//проблема тут вот в чем - надо сделать разделение между евро и китаем
+//            else if (update.message() != null && update.message().text().equals(update.message().text())) {
+//
+//                String messageText = update.message().text();
+//                String name = update.message().chat().firstName();
+//
+//                String msg = "Привет, " + name;
+//                long chatId = update.message().chat().id();
+//
+//                SendMessage sendMessage = new SendMessage(chatId, msg);
+//                telegramBot.execute(sendMessage);
+//
+//                    if (messageText.matches("[0-3]?[0-9].[0-1]?[0-9]")) {
+//                        String[] dateParts = messageText.split("\\.");
+//                        int day = Integer.parseInt(dateParts[0]);
+//                        int month = Integer.parseInt(dateParts[1]);
+////
+//                        String zodiacSign = getZodiacSign(day, month);
+////
+//                      SendMessage sendMessage2 = new SendMessage(chatId, "Ваш знак зодиака: " + zodiacSign);
+//                        telegramBot.execute(sendMessage2);
+//                    } else {
+//                        SendMessage sendMessage3 = new SendMessage(chatId, "Пожалуйста, введите день и месяц в формате 'дд.мм'");
+//                        telegramBot.execute(sendMessage3);
+//                    }
+//            }
 //            else {
 //                failedMessage(update.message().chat().id());
 //            }
@@ -235,7 +264,18 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         Matcher matcher = PATTERN.matcher(text);
         return matcher.matches();
     }
+
     private String calculateChineseHoroscope(int day, int month, int year) {
+        if (year < 1924) {
+            System.out.println("Год должен быть не меньше 1924");
+            return "Год не меньше 1924";
+        }
+//        else if (month > 12 && month <= 0) {
+//            return "вы ввели не правильный месяц";
+//        } else if (day <= 0 && day > 31) {
+//            System.out.println("инкореркт дей");
+//            return "Введите корректный день";
+//        }
         // Знаки китайского зодиака
         String[] chineseZodiacSigns = {
                 "Крыса", "Бык", "Тигр", "Кролик", "Дракон", "Змея",
@@ -244,27 +284,46 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
         // Год начала китайского календаря (китайский год 1)
         int startYear = 1924;
+//        if (startYear < 1924) {
+//            System.out.println("Год должен быть не меньше 1924");
+//            return "Год не меньше 1924";
+//        }
 
         // Рассчитываем китайский год на основе года рождения
         int chineseYear = (year - startYear) % 60;
 
         // Рассчитываем китайский месяц (просто используем месяц из даты)
         int chineseMonth = month;
+//        if (chineseMonth > 12 && chineseMonth <= 0) {
+//            return "вы ввели не правильный месяц";
+//        }
 
         // Рассчитываем китайский день (просто используем день из даты)
         int chineseDay = day;
+//        if (chineseDay <= 0 && chineseDay > 31) {
+//            System.out.println("инкореркт дей");
+//            return "Введите корректный день";
+//        }
 
         // Определяем знак китайского зодиака
         String zodiacSign = chineseZodiacSigns[chineseYear % 12];
+         if (month > 12 && month <= 0) {
+            return "вы ввели не правильный месяц";
+        } else if (chineseDay <= 0 && chineseDay > 31) {
+            System.out.println("инкореркт дей");
+            return "Введите корректный день";
+        } else
+             return "Ваш китайский знак зодиака: " + zodiacSign;
 
-        return "Ваш китайский знак зодиака: " + zodiacSign;
+
+
     }
 
 
     private String getZodiacSign(int day, int month) {
 
 
-        if ((month == 3 && day >= 21 && day <=31 ) || (month == 4 && day <= 19)) {
+        if ((month == 3 && day >= 21 && day <= 31) || (month == 4 && day <= 19)) {
             return oven();
         } else if ((month == 4 && day >= 20 && day <= 30) || (month == 5 && day <= 20)) {
             return " Тельцы — личности очень сильные и об этом уже было сказано выше." +
@@ -300,7 +359,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     "Своенравность, властолюбие, коварство, жестокость, любовь к роскоши и комфорту. Не готовы подпускать к себе новых людей.";
         } else if ((month == 1 && day >= 20 && day <= 31) || (month == 2 && day <= 18)) {
             return " Водолей. Если говорить о сильных сторонах Водолея, то, в первую очередь, это его целеустремленность, умение найти выход из любой сложной ситуации, ответственность за себя и своих близких. Причем ответственны Водолеи во всем — на работе, перед начальством, перед друзьями, а главное — перед своей семей. А еще Водолеи довольно часто бывают прекрасными родителями, которые умеют найти подход к своим детям, не ограничиваясь скучными штампами из книг по воспитанию.";
-        } else if ((month == 2 && day >= 19 && day <= 29) || (month == 3 && day <= 30)){
+        } else if ((month == 2 && day >= 19 && day <= 29) || (month == 3 && day <= 30)) {
             return " Рыбы. Главным достоинством Рыб в наше время является честность. Даже если в некоторых случаях будет выгодно солгать, в силу их добропорядочности этого не случится.\n" +
                     "\n" +
                     "Трудолюбие присуще Рыбам, но только тогда, когда никто не видит. Так как представители этого знака — творческие натуры, для работы им нужно уединиться. Водные знаки не любят делать что-то напоказ, поэтому и трудиться привыкли в одиночку.";
@@ -308,6 +367,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
 //
     }
+
     private String oven() {
         return " Овен личность крайне целеустремлённая. Что можно записать как в плюс, так и в минус, представителю знака. Если он действительно чем-то увлечён, он, без преувеличения, готов на всё ради достижения цели. Главное — успеть её достичь до утраты интереса.";
     }
@@ -331,4 +391,4 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 //        return
 //    }
 
-    }
+}
