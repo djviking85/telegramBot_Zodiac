@@ -277,9 +277,10 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
         // Знаки китайского зодиака
         String[] chineseZodiacSigns = {
-                "Крыса", "Бык", "Тигр", "Кролик", "Дракон", "Змея",
-                "Лошадь", "Овца", "Обезьяна", "Петух", "Собака", "Свинья"
+                miceChina(), moolChina(), tigerChina(), rabbitChina(), dogChina(), snakeChina(),
+                horseChina(), sheepChina(), monkeyChina(), chikenChina(), dogChina(), pigChina()
         };
+
 
         // Год начала китайского календаря (китайский год 1)
         int startYear = 1924;
@@ -311,6 +312,31 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
 
 
+    }
+    private String miceChina() {
+        return "мышь ебанная";
+    }private String moolChina() {
+        return "мышь ебанная";
+    }private String tigerChina() {
+        return "мышь ебанная";
+    }private String rabbitChina() {
+        return "мышь ебанная";
+    }private String dragonChina() {
+        return "мышь ебанная";
+    }private String snakeChina() {
+        return "мышь ебанная";
+    }private String horseChina() {
+        return "мышь ебанная";
+    }private String sheepChina() {
+        return "мышь ебанная";
+    }private String monkeyChina() {
+        return "мышь ебанная";
+    }private String chikenChina() {
+        return "мышь ебанная";
+    }private String dogChina() {
+        return "мышь ебанная";
+    }private String pigChina() {
+        return "мышь ебанная";
     }
 
 
