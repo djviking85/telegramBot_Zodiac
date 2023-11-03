@@ -269,13 +269,12 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         if (year < 1924) {
             System.out.println("Год должен быть не меньше 1924");
             return "Год не меньше 1924";
+        } else if (day > 31) {
+            return "Введите корректный день";
+        } else if (month > 12) {
+            return "вы ввели не правильный месяц";
         }
-//        else if (month > 12 && month <= 0) {
-//            return "вы ввели не правильный месяц";
-//        } else if (day <= 0 && day > 31) {
-//            System.out.println("инкореркт дей");
-//            return "Введите корректный день";
-//        }
+
         // Знаки китайского зодиака
         String[] chineseZodiacSigns = {
                 "Крыса", "Бык", "Тигр", "Кролик", "Дракон", "Змея",
@@ -307,13 +306,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
         // Определяем знак китайского зодиака
         String zodiacSign = chineseZodiacSigns[chineseYear % 12];
-         if (month > 12 && month <= 0) {
-            return "вы ввели не правильный месяц";
-        } else if (chineseDay <= 0 && chineseDay > 31) {
-            System.out.println("инкореркт дей");
-            return "Введите корректный день";
-        } else
-             return "Ваш китайский знак зодиака: " + zodiacSign;
+//        String dayOfChina = String.valueOf(chineseDay);
+             return " Ваш год: " + zodiacSign;
 
 
 
